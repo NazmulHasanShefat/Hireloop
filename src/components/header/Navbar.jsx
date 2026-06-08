@@ -38,7 +38,7 @@ export default function Navbar() {
   }, [lastScrollY]);
 
   const navLinks = [
-    { name: "Browse Jobs", href: "#" },
+    { name: "Browse Jobs", href: "/browse-jobs" },
     { name: "Company", href: "#" },
     { name: "Pricing", href: "#" },
   ];
@@ -63,12 +63,12 @@ export default function Navbar() {
           <ul className="hidden items-center gap-8 text-sm text-white md:flex">
             {navLinks.map((link) => (
               <li key={link.name}>
-                <a
+                <Link
                   href={link.href}
                   className="transition hover:text-violet-400"
                 >
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

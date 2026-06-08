@@ -108,6 +108,7 @@ export default function SignInForm() {
         });
         if(error){
           console.log(error)
+          alert(error.message)
         }
         
         if (data) {

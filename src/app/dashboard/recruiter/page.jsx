@@ -4,7 +4,7 @@ import RecruiterStatesComponent from "@/components/dashboard/RecruiterStatesComp
 
 export default function page() {
   return (
-    <section className="lg:ml-54 w-full">
+    <section className="w-full">
       <DashboardNavbar />
       <RecruiterStatesComponent />
       <DashboardRecentTable />

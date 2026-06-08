@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
-  const [userRoll, setUserRoll] = useState("Seeker");
+  const [userRoll, setUserRoll] = useState("seeker");
   const router = useRouter();
 
   const [errors, setErrors] = useState({
@@ -103,15 +103,17 @@ export default function SignUpForm() {
       name: values.name,
       email: values.email,
       password: values.password,
-      callbackURL: "/sign-in",
+      role: userRoll,
     });
     if(error){
       console.log(error)
+      alert(error.message)
     }
     
     if (data) {
       console.log("Signup successful:", data);
       router.push("/sign-in");
+      // alert("sign up successfull")
     }
 
     // e.currentTarget.reset();
@@ -127,22 +129,21 @@ export default function SignUpForm() {
     <section>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex items-center justify-start gap-3">
-          <input
+          {/* <input
             type="text"
             name="userRoll"
             defaultValue={userRoll}
-            onChange={(e) => setUserRoll(e.target.value)}
-            className="hidden"
-          />
+            className=""
+          /> */}
           <div
-            onClick={() => setUserRoll("Seeker")}
-            className={`px-4 py-2 ${userRoll === "Seeker" ? "bg-blue-600 border-blue-600" : "border-blue-400 text-white"} border-2 text-white rounded-xl cursor-pointer`}
+            onClick={() => setUserRoll("seeker")}
+            className={`px-4 py-2 ${userRoll === "seeker" ? "bg-blue-600 border-blue-600" : "border-blue-400 text-white"} border-2 text-white rounded-xl cursor-pointer`}
           >
             Seeker
           </div>
           <div
-            onClick={() => setUserRoll("Recruiter")}
-            className={`px-4 py-2 ${userRoll === "Recruiter" ? "bg-blue-600 border-blue-600" : "border-blue-400 text-white"} border-2 text-white rounded-xl cursor-pointer`}
+            onClick={() => setUserRoll("recruiter")}
+            className={`px-4 py-2 ${userRoll === "recruiter" ? "bg-blue-600 border-blue-600" : "border-blue-400 text-white"} border-2 text-white rounded-xl cursor-pointer`}
           >
             Recrutiter
           </div>
