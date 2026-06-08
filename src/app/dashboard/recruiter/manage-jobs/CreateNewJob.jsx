@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Input, TextField, Label, TextArea } from "@heroui/react";
+import { Button, Input, TextField, Label, TextArea, toast } from "@heroui/react";
 import { FiMapPin, FiUploadCloud, FiChevronDown, FiX, FiDollarSign, FiCalendar } from "react-icons/fi";
+import { createNewJob } from "@/lib/actions/jobs";
 
 export default function CreateNewJobModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +56,7 @@ export default function CreateNewJobModal() {
   };
 
   // --- FORM SUBMIT HANDLER WITH VALIDATION ---
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isPostingAllowed) return;
 
@@ -87,6 +88,13 @@ export default function CreateNewJobModal() {
       setErrors(validationErrors);
       return; 
     }
+
+    const res = await createNewJob(formProps);
+    console.log(res)
+    if(res.insertedId){
+      toast.success("data inserted successfull")
+    }
+    console.log("message for all time", res)
 
     setErrors({});
     console.log("All Form Data using fromEntries:", formProps);
