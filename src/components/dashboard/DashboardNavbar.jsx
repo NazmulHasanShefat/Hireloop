@@ -141,6 +141,7 @@ import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiUser, FiSettings, FiLogOut } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import SearchModal from "../ui/SearchModal";
 
 export default function DashboardNavbar() {
   const [searchFocused, setSearchFocused] = useState(false);
@@ -222,6 +223,7 @@ export default function DashboardNavbar() {
           className="bg-transparent text-sm text-gray-300 placeholder-gray-600 outline-none w-full font-light tracking-wide"
         />
       </div>
+        <SearchModal />
 
       {/* Right Section */}
       <div className="flex items-center gap-3">

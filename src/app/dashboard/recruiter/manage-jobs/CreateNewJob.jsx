@@ -89,7 +89,15 @@ export default function CreateNewJobModal() {
       return; 
     }
 
-    const res = await createNewJob(formProps);
+    const payload = {
+      ...formProps,
+      isRemote: true,
+      companyId:"mycompanyid",
+      status:"active",
+      isPubliclyVisible: true
+    }
+
+    const res = await createNewJob(payload);
     console.log(res)
     if(res.insertedId){
       toast.success("data inserted successfull")
@@ -97,7 +105,7 @@ export default function CreateNewJobModal() {
     console.log("message for all time", res)
 
     setErrors({});
-    console.log("All Form Data using fromEntries:", formProps);
+    console.log("All Form Data using fromEntries:", payload);
     setIsOpen(false);
     
   };
