@@ -29,6 +29,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <Toast.Provider />
           {children}
+
         </Providers>
       </body>
     </html>

@@ -69,11 +69,7 @@ export default function CreateNewJobModal() {
     // Custom Validation Logic
     const validationErrors = {};
 
-    if (!formProps.companyName?.trim()) validationErrors.companyName = "Company name is required";
-    if (!selectedIndustry) validationErrors.companyIndustry = "Please select an industry";
-    if (!formProps.websiteUrl?.trim()) validationErrors.websiteUrl = "Website URL is required";
-    if (!formProps.companyLocation?.trim()) validationErrors.companyLocation = "Company location is required";
-    if (!selectedRange) validationErrors.employeeRange = "Please select an employee range";
+  
     if (!formProps.jobTitle?.trim()) validationErrors.jobTitle = "Job title is required";
     if (!selectedCategory) validationErrors.jobCategory = "Please select a job category";
     if (!selectedJobType) validationErrors.jobType = "Please select a job type";
@@ -128,7 +124,7 @@ export default function CreateNewJobModal() {
         size="md"
         className="bg-white hover:bg-gray-100 text-[#0d0d11] text-xs font-medium px-6 py-2.5 rounded-lg shadow-sm transition-all duration-150"
       >
-        Register your company & Post Job
+        Create a new job
       </Button>
 
       {/* Custom Modal Backdrop Overlay */}
@@ -145,8 +141,8 @@ export default function CreateNewJobModal() {
             noValidate
             className="relative bg-[#16161a] border border-white/5 rounded-xl shadow-2xl text-gray-200 w-full max-w-[620px] overflow-visible transform transition-all z-10 animate-in fade-in zoom-in-95 duration-150"
           >
-            
-            {/* Header */}
+
+                    {/* Header */}
             <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/5">
               <div className="text-left">
                 <h2 className="text-lg font-semibold text-white tracking-wide">
@@ -168,179 +164,8 @@ export default function CreateNewJobModal() {
 
             {/* Body Form Layout */}
             <div className="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto overflow-x-visible">
-              
-              {/* --- COMPANY SECTION --- */}
-              <div className="sm:col-span-2 text-left border-b border-white/5 pb-2 mt-2">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">Company Details</h3>
-              </div>
 
-              {/* Company Name */}
-              <TextField className="w-full flex flex-col gap-1.5 text-left">
-                <Label className="text-xs font-medium text-gray-400">Company Name *</Label>
-                <Input 
-                  name="companyName"
-                  onChange={() => handleInputChange("companyName")}
-                  placeholder="e.g. Acme Corp" 
-                  className={`text-xs text-gray-200 bg-[#212127] hover:bg-[#26262d] focus-within:bg-[#26262d] h-10 px-3 rounded-lg border ${errors.companyName ? 'border-red-500/50 focus-within:border-red-500' : 'border-transparent focus-within:border-white/50'} outline-none ring-0 focus:outline-none focus:ring-0 w-full transition-colors font-light placeholder:text-gray-600`}
-                />
-                {errors.companyName && <span className="text-[11px] text-red-500 font-light mt-0.5">{errors.companyName}</span>}
-              </TextField>
-
-              {/* Industry Selection Dropdown */}
-              <div className="flex flex-col gap-1.5 text-left relative">
-                <label className="text-xs font-medium text-gray-400">Industry / Category *</label>
-                <input type="hidden" name="companyIndustry" value={selectedIndustry} />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsIndustryOpen(!isIndustryOpen);
-                    setIsRangeOpen(false);
-                    setIsCategoryOpen(false);
-                    setIsJobTypeOpen(false);
-                    setIsCurrencyOpen(false);
-                  }}
-                  className={`bg-[#212127] hover:bg-[#26262d] focus:bg-[#26262d] h-10 rounded-lg border ${errors.companyIndustry ? 'border-red-500/50 focus:border-red-500' : 'border-transparent focus:border-white/50'} px-3 flex items-center justify-between text-xs font-light transition-colors text-left w-full outline-none ring-0`}
-                >
-                  <span className={selectedIndustry ? "text-gray-200" : "text-gray-500"}>
-                    {selectedIndustry || "Select Industry"}
-                  </span>
-                  <FiChevronDown className={`text-gray-500 text-sm transition-transform duration-150 ${isIndustryOpen ? "rotate-180" : ""}`} />
-                </button>
-                {errors.companyIndustry && <span className="text-[11px] text-red-500 font-light mt-0.5">{errors.companyIndustry}</span>}
-                
-                {isIndustryOpen && (
-                  <div className="absolute top-[62px] left-0 w-full bg-[#212127] border border-white/50 rounded-lg shadow-xl py-1 z-50 max-h-40 overflow-y-auto">
-                    {industries.map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => {
-                          setSelectedIndustry(item);
-                          setIsIndustryOpen(false);
-                          handleInputChange("companyIndustry");
-                        }}
-                        className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-white/5 hover:text-white transition-colors outline-none ring-0"
-                      >
-                        {item}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Website URL */}
-              <TextField className="w-full flex flex-col gap-1.5 text-left">
-                <Label className="text-xs font-medium text-gray-400">Website URL *</Label>
-                <div className={`flex items-center bg-[#212127] hover:bg-[#26262d] focus-within:bg-[#26262d] h-10 px-3 rounded-lg border ${errors.websiteUrl ? 'border-red-500/50 focus-within:border-red-500' : 'border-transparent focus-within:border-white/50'} transition-colors w-full ring-0 outline-none`}>
-                  <span className="text-xs text-gray-600 pr-1 select-none font-light">https://</span>
-                  <Input 
-                    name="websiteUrl"
-                    onChange={() => handleInputChange("websiteUrl")}
-                    placeholder="www.company.com" 
-                    className="text-xs text-gray-200 bg-transparent outline-none ring-0 focus:outline-none focus:ring-0 w-full font-light placeholder:text-gray-600"
-                  />
-                </div>
-                {errors.websiteUrl && <span className="text-[11px] text-red-500 font-light mt-0.5">{errors.websiteUrl}</span>}
-              </TextField>
-
-              {/* Location */}
-              <TextField className="w-full flex flex-col gap-1.5 text-left">
-                <Label className="text-xs font-medium text-gray-400">Company Location *</Label>
-                <div className={`flex items-center bg-[#212127] hover:bg-[#26262d] focus-within:bg-[#26262d] h-10 px-3 rounded-lg border ${errors.companyLocation ? 'border-red-500/50 focus-within:border-red-500' : 'border-transparent focus-within:border-white/50'} transition-colors w-full ring-0 outline-none`}>
-                  <FiMapPin className="text-gray-500 text-xs shrink-0 mr-2" />
-                  <Input 
-                    name="companyLocation"
-                    onChange={() => handleInputChange("companyLocation")}
-                    placeholder="City, Country" 
-                    className="text-xs text-gray-200 bg-transparent outline-none ring-0 focus:outline-none focus:ring-0 w-full font-light placeholder:text-gray-600"
-                  />
-                </div>
-                {errors.companyLocation && <span className="text-[11px] text-red-500 font-light mt-0.5">{errors.companyLocation}</span>}
-              </TextField>
-
-              {/* Employee Count Range Selection Dropdown */}
-              <div className="flex flex-col gap-1.5 text-left relative">
-                <label className="text-xs font-medium text-gray-400">Employee Count Range *</label>
-                <input type="hidden" name="employeeRange" value={selectedRange} />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsRangeOpen(!isRangeOpen);
-                    setIsIndustryOpen(false);
-                    setIsCategoryOpen(false);
-                    setIsJobTypeOpen(false);
-                    setIsCurrencyOpen(false);
-                  }}
-                  className={`bg-[#212127] hover:bg-[#26262d] focus:bg-[#26262d] h-10 rounded-lg border ${errors.employeeRange ? 'border-red-500/50 focus:border-red-500' : 'border-transparent focus-within:border-white/50'} px-3 flex items-center justify-between text-xs font-light transition-colors text-left w-full outline-none ring-0`}
-                >
-                  <span className={selectedRange ? "text-gray-200" : "text-gray-500"}>
-                    {selectedRange || "Select Range"}
-                  </span>
-                  <FiChevronDown className={`text-gray-500 text-sm transition-transform duration-150 ${isRangeOpen ? "rotate-180" : ""}`} />
-                </button>
-                {errors.employeeRange && <span className="text-[11px] text-red-500 font-light mt-0.5">{errors.employeeRange}</span>}
-                
-                {isRangeOpen && (
-                  <div className="absolute top-[62px] left-0 w-full bg-[#212127] border border-white/50 rounded-lg shadow-xl py-1 z-50 max-h-40 overflow-y-auto">
-                    {employeeRanges.map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => {
-                          setSelectedRange(item);
-                          setIsRangeOpen(false);
-                          handleInputChange("employeeRange");
-                        }}
-                        className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-white/5 hover:text-white transition-colors outline-none ring-0"
-                      >
-                        {item}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Company Logo File Upload */}
-              <div className="flex flex-col gap-1.5 text-left">
-                <label className="text-xs font-medium text-gray-400">Company Logo</label>
-                <label className="flex items-center gap-3 bg-[#212127] border border-dashed border-white/10 rounded-lg p-2 h-10 cursor-pointer hover:bg-[#26262d] transition-colors focus-within:border-white/5 outline-none">
-                  <div className="w-7 h-7 bg-white/[0.04] border border-white/5 rounded flex items-center justify-center text-gray-400 shrink-0">
-                    <FiUploadCloud className="text-xs" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-medium text-gray-300 truncate">
-                      {logoName || "Upload image"}
-                    </p>
-                    {!logoName && (
-                      <p className="text-[9px] text-gray-500 font-light">PNG, JPG up to 5MB</p>
-                    )}
-                  </div>
-                  <input 
-                    type="file" 
-                    name="companyLogo"
-                    accept="image/*" 
-                    className="hidden" 
-                    onChange={(e) => setLogoName(e.target.files[0]?.name || "")}
-                  />
-                </label>
-              </div>
-
-              {/* Brief Description */}
-              <TextField className="sm:col-span-2 flex flex-col gap-1.5 text-left">
-                <Label className="text-xs font-medium text-gray-400">Brief Description</Label>
-                <TextArea
-                  name="companyDescription"
-                  placeholder="Tell us about your company's mission and culture..."
-                  rows={2}
-                  className="text-xs text-gray-200 placeholder-gray-600 font-light bg-[#212127] hover:bg-[#26262d] focus:bg-[#26262d] rounded-lg border border-transparent focus:border-white/50 p-3 outline-none ring-0 focus:outline-none focus:ring-0 resize-none leading-relaxed transition-colors w-full"
-                />
-              </TextField>
-
-
-              {/* --- JOB INFO SECTION --- */}
-              <div className="sm:col-span-2 text-left border-b border-white/5 pb-2 mt-4">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">Job Info</h3>
-              </div>
+           
 
               {/* Job Title */}
               <TextField className="sm:col-span-2 w-full flex flex-col gap-1.5 text-left">
