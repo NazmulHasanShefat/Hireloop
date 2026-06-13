@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Form } from "@heroui/react";
+import { Button, Form, toast } from "@heroui/react";
 import { FiMapPin, FiUploadCloud, FiChevronDown, FiX } from "react-icons/fi";
 import { CgSpinner } from "react-icons/cg"; // Spinner icon imported for the uploading status
+import { createCompany } from "@/lib/api/companys";
 
-export default function RegisterCompanyModal() {
+export default function RegisterCompanyModal({recruiter}) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoName, setLogoName] = useState("");
   const [logoPreview, setLogoPreview] = useState(""); 
@@ -135,7 +136,7 @@ export default function RegisterCompanyModal() {
   }, [logoPreview]);
 
   // --- FORM SUBMIT HANDLER ---
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
@@ -189,20 +190,26 @@ export default function RegisterCompanyModal() {
       companyLocation: formProps.companyLocation,
       employeeRange: selectedRange,
       companyLogo: logoUrl,
-      companyDescription: formProps.companyDescription
+      companyDescription: formProps.companyDescription,
+      recruiterId: recruiter.id
     });
 
-    const payload = {
+    const newCompany = {
       companyName: formProps.companyName,
       companyIndustry: selectedIndustry,
       websiteUrl: formProps.websiteUrl,
       companyLocation: formProps.companyLocation,
       employeeRange: selectedRange,
       companyLogo: logoUrl,
-      companyDescription: formProps.companyDescription
+      companyDescription: formProps.companyDescription,
+      recruiterId: recruiter.id
     }
 
-    
+    const payload = await createCompany(newCompany);
+    console.log("new company result",payload)
+    if(payload.insertedId){
+      toast.success("company Created successfullt")
+    }
 
     
     // Put your backend database `fetch()` / `axios.post()` call right here using the payload above

@@ -5,7 +5,7 @@ import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
 import { FiPlus } from "react-icons/fi";
 import RegisterCompanyModal from "./RegisterCompanyModal";
 
-export default function CompanyRegisterEmptyState() {
+export default function CompanyRegisterEmptyState({recruiter}) {
   return (
     <div className="w-full min-h-[80vh] flex flex-col items-center justify-center bg-[#0d0d11] text-gray-200 px-6 py-12 select-none">
       
@@ -50,7 +50,7 @@ export default function CompanyRegisterEmptyState() {
       {/* Primary Control Call To Actions */}
       <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm px-4">
     
-        <RegisterCompanyModal />
+        <RegisterCompanyModal recruiter={recruiter}/>
         
         <button 
           onClick={() => console.log("Opening Help Center...")}

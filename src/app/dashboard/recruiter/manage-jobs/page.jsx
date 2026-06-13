@@ -1,13 +1,16 @@
 import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
 import CreateNewJobModal from "./CreateNewJob";
 import { JobApplicationsTable } from "./AllCompanyjobs";
+import { getLogdinRecruiterCompany } from "@/lib/api/companys";
 
-export default function page() {
+export default async function page() {
+  const company = await getLogdinRecruiterCompany();
+  
   return (
- <section className="w-full">
+    <section className="w-full">
       <DashboardNavbar />
-       <CreateNewJobModal />
-       <JobApplicationsTable />
+      <CreateNewJobModal recruiterCompany={company}/>
+      <JobApplicationsTable />
     </section>
   );
 }
