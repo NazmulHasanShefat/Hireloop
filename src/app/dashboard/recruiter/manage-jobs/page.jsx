@@ -1,6 +1,6 @@
 import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
 import CreateNewJobModal from "./CreateNewJob";
-import { JobApplicationsTable } from "./Alljobs";
+import { JobApplicationsTable } from "./AllCompanyjobs";
 
 export default function page() {
   return (

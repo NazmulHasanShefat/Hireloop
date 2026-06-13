@@ -3,11 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Form } from "@heroui/react";
 import { FiMapPin, FiUploadCloud, FiChevronDown, FiX } from "react-icons/fi";
+import { CgSpinner } from "react-icons/cg"; // Spinner icon imported for the uploading status
 
 export default function RegisterCompanyModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [logoName, setLogoName] = useState("");
-  const [logoPreview, setLogoPreview] = useState(""); // ইমেজ প্রিভিউ ইউআরএল স্টেট
+  const [logoPreview, setLogoPreview] = useState(""); 
+  const [logoUrl, setLogoUrl] = useState(""); // Stores the hosted image URL from ImgBB
+  const [isUploading, setIsUploading] = useState(false); // Manages loading spinner state
 
   // Select Dropdown States
   const [selectedIndustry, setSelectedIndustry] = useState("");
@@ -15,7 +18,7 @@ export default function RegisterCompanyModal() {
   const [isIndustryOpen, setIsIndustryOpen] = useState(false);
   const [isRangeOpen, setIsRangeOpen] = useState(false);
 
-  // ইনপুট ভ্যালিডেশন স্টেট
+  // Input Validation State
   const [errors, setErrors] = useState({
     companyName: "",
     companyIndustry: "",
@@ -31,7 +34,7 @@ export default function RegisterCompanyModal() {
 
   const industryRef = useRef(null);
   const rangeRef = useRef(null);
-  const fileInputRef = useRef(null); // ফাইল ইনপুট রিসেট করার জন্য রেফ
+  const fileInputRef = useRef(null); 
 
   // Outside Click Handling Logic
   useEffect(() => {
@@ -53,37 +56,78 @@ export default function RegisterCompanyModal() {
     };
   }, [isOpen]);
 
-  // অন-চেঞ্জে এরর রিমুভ করার ফাংশন
   const handleInputChange = (field) => {
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  // ইমেজ ফাইল সিলেক্ট ও প্রিভিউ হ্যান্ডলার
+  // --- IMGBB UPLOAD FUNCTION ---
+  const uploadToImgBB = async (file) => {
+    setIsUploading(true);
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY; // Recommended: Set this in your .env.local file
+
+    if (!apiKey) {
+      console.error("ImgBB API key is missing. Please check your environment variables.");
+      setErrors((prev) => ({ ...prev, companyLogo: "Upload failed: Setup error." }));
+      setIsUploading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setLogoUrl(result.data.url); // Saving hosted URL for database submission
+      } else {
+        setErrors((prev) => ({ ...prev, companyLogo: "Failed to upload logo to server." }));
+        handleRemoveLogo();
+      }
+    } catch (error) {
+      console.error("Error uploading to ImgBB:", error);
+      setErrors((prev) => ({ ...prev, companyLogo: "Network error occurred during upload." }));
+      handleRemoveLogo();
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Image File Selection & Local Preview Handler
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setLogoName(file.name);
       handleInputChange("companyLogo");
 
-      // প্রিভিউ জেনারেট করার জন্য অবজেক্ট ইউআরএল তৈরি
+      // Generate instant local blob preview
       const previewUrl = URL.createObjectURL(file);
       setLogoPreview(previewUrl);
+
+      // Trigger the background upload to ImgBB
+      uploadToImgBB(file);
     }
   };
 
-  // প্রিভিউ রিমুভ করার ফাংশন
+  // Remove Logo Function
   const handleRemoveLogo = (e) => {
-    e.preventDefault(); // লেবেলের ডিফল্ট ক্লিক ইভেন্ট আটকানোর জন্য
+    if (e) e.preventDefault(); 
     setLogoName("");
     setLogoPreview("");
+    setLogoUrl("");
+    setIsUploading(false);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // ইনপুট ভ্যালু ক্লিয়ার
+      fileInputRef.current.value = ""; 
     }
   };
 
-  // মেমোরি লিক এড়াতে কম্পোনেন্ট আনমাউন্ট হলে প্রিভিউ ইউআরএল ক্লিয়ার করা
   useEffect(() => {
     return () => {
       if (logoPreview) URL.revokeObjectURL(logoPreview);
@@ -120,7 +164,10 @@ export default function RegisterCompanyModal() {
       newErrors.employeeRange = "Please select employee range.";
       hasError = true;
     }
-    if (!logoName) {
+    if (!logoUrl && isUploading) {
+      newErrors.companyLogo = "Please wait for the logo to finish uploading.";
+      hasError = true;
+    } else if (!logoUrl) {
       newErrors.companyLogo = "Company logo is required.";
       hasError = true;
     }
@@ -134,11 +181,31 @@ export default function RegisterCompanyModal() {
       return; 
     }
 
+    // Hosted ImgBB URL sent here under `companyLogo` 
     console.log("Form Data Submitted Successfully:", {
-      ...formProps,
+      companyName: formProps.companyName,
       companyIndustry: selectedIndustry,
+      websiteUrl: formProps.websiteUrl,
+      companyLocation: formProps.companyLocation,
       employeeRange: selectedRange,
+      companyLogo: logoUrl,
+      companyDescription: formProps.companyDescription
     });
+
+    const payload = {
+      companyName: formProps.companyName,
+      companyIndustry: selectedIndustry,
+      websiteUrl: formProps.websiteUrl,
+      companyLocation: formProps.companyLocation,
+      employeeRange: selectedRange,
+      companyLogo: logoUrl,
+      companyDescription: formProps.companyDescription
+    }
+
+    
+
+    
+    // Put your backend database `fetch()` / `axios.post()` call right here using the payload above
     
     handleModalClose();
   };
@@ -149,6 +216,8 @@ export default function RegisterCompanyModal() {
     setIsRangeOpen(false);
     setLogoName("");
     setLogoPreview("");
+    setLogoUrl("");
+    setIsUploading(false);
     setSelectedIndustry("");
     setSelectedRange("");
     setErrors({
@@ -340,15 +409,26 @@ export default function RegisterCompanyModal() {
                 )}
               </div>
 
-              {/* Company Logo File Upload with Real-time Preview */}
+              {/* Company Logo File Upload with ImgBB integration */}
               <div className="flex flex-col gap-1.5 text-left w-full">
                 <label className="text-xs font-medium text-gray-400">Company Logo</label>
                 <label className={`flex items-center gap-3 bg-[#212127] border border-dashed rounded-lg p-2 h-10 cursor-pointer hover:bg-[#26262d] transition-colors outline-none relative overflow-hidden ${
                   errors.companyLogo ? "border-danger" : "border-white/10"
                 }`}>
                   
-                  {/* ইমেজ আপলোড হওয়ার পর এই কন্ডিশনাল UI রেন্ডার হবে */}
-                  {logoPreview ? (
+                  {isUploading ? (
+                    // 1. Pending Upload Loading Spinner View
+                    <div className="flex items-center gap-3 w-full h-full z-10 select-none">
+                      <div className="w-7 h-7 bg-white/[0.04] border border-white/5 rounded flex items-center justify-center text-white shrink-0">
+                        <CgSpinner className="text-sm animate-spin" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-medium text-gray-300 truncate">Uploading logo...</p>
+                        <p className="text-[9px] text-gray-500 font-light">Sending to ImgBB hosting</p>
+                      </div>
+                    </div>
+                  ) : logoPreview ? (
+                    // 2. Successful Upload Preview View
                     <div className="flex items-center justify-between w-full h-full z-10">
                       <div className="flex items-center gap-2 min-w-0">
                         <img 
@@ -356,9 +436,12 @@ export default function RegisterCompanyModal() {
                           alt="Logo Preview" 
                           className="w-7 h-7 object-cover rounded border border-white/10 bg-black"
                         />
-                        <p className="text-[11px] font-medium text-gray-200 truncate max-w-[160px]">
-                          {logoName}
-                        </p>
+                        <div className="flex flex-col min-w-0">
+                          <p className="text-[11px] font-medium text-gray-200 truncate max-w-[140px]">
+                            {logoName}
+                          </p>
+                          <p className="text-[9px] text-green-400 font-light select-none">Upload complete</p>
+                        </div>
                       </div>
                       <button
                         type="button"
@@ -369,7 +452,7 @@ export default function RegisterCompanyModal() {
                       </button>
                     </div>
                   ) : (
-                    // ইমেজ আপলোড না থাকলে ডিফল্ট UI
+                    // 3. Default Upload Area
                     <>
                       <div className="w-7 h-7 bg-white/[0.04] border border-white/5 rounded flex items-center justify-center text-gray-400 shrink-0">
                         <FiUploadCloud className="text-xs" />
@@ -386,11 +469,11 @@ export default function RegisterCompanyModal() {
                   <input 
                     ref={fileInputRef}
                     type="file" 
-                    name="companyLogo"
+                    name="companyLogoInput"
                     accept="image/*" 
                     className="hidden" 
                     onChange={handleFileChange}
-                    disabled={!!logoPreview} // প্রিভিউ থাকলে ফাইল ডায়ালগ পপআপ বন্ধ থাকবে
+                    disabled={isUploading || !!logoPreview} 
                   />
                 </label>
                 {errors.companyLogo && <p className="text-[10px] text-danger mt-0.5">{errors.companyLogo}</p>}
@@ -425,7 +508,8 @@ export default function RegisterCompanyModal() {
               </Button>
               <Button
                 type="submit"
-                className="bg-white hover:bg-gray-100 text-[#0d0d11] text-xs font-semibold px-5 h-9 rounded-lg shadow-sm"
+                disabled={isUploading}
+                className="bg-white hover:bg-gray-100 text-[#0d0d11] text-xs font-semibold px-5 h-9 rounded-lg shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 Register Company
               </Button>

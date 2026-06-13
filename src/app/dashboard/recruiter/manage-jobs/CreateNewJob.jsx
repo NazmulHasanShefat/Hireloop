@@ -88,7 +88,7 @@ export default function CreateNewJobModal() {
     const payload = {
       ...formProps,
       isRemote: true,
-      companyId:"mycompanyid",
+      companyId:"mycompany53",
       status:"active",
       isPubliclyVisible: true
     }
