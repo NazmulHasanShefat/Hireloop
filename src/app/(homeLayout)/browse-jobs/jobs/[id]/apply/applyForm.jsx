@@ -1,108 +1,107 @@
 "use client";
 
 import React from "react";
-// Importing from HeroUI v3.x
-import { Input, Textarea, Button, Card, CardHeader, CardBody } from "@heroui/react";
-// Importing professional icons from react-icons (FontAwesome 5 collection)
+// Import HeroUI Aria components
+import { Card, TextField, Label, Input, TextArea, Button, toast } from "@heroui/react";
+// Import Icons from react-icons
 import { FaLink, FaBriefcase, FaRegCommentDots } from "react-icons/fa";
+import { postJobApplication } from "@/lib/actions/jobApplication";
 
-export default function ApplicationForm({ 
-  jobId = "JOB-101", 
-  jobTitle = "Frontend Developer", 
-  applicantName = "John Doe", 
-  applicantEmail = "john.doe@example.com" 
-}) {
-
-  const handleSubmit = (e) => {
+export default function ApplicationForm({ currentJob, applicant}) {
+  console.log(currentJob)
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Create a FormData instance from the submitted form HTML element
+    // Collect all data using standard FormData + Object.fromEntries
     const formDataInstance = new FormData(e.currentTarget);
-
-    // 2. Convert the entries into a clean JavaScript object
     const formValues = Object.fromEntries(formDataInstance.entries());
 
-    // 3. This object contains all values including hidden fields
-    console.log("Data ready to post to database:", formValues);
-    
-    // Example: fetch('/api/apply', { method: 'POST', body: JSON.stringify(formValues) })
+    console.log("Complete Data for Database:", formValues);
+    const result = await postJobApplication(formValues)
+    console.log("this is result",result)
+    if(result.insertedId){
+      toast.success("your application submited successfully")
+    }
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 px-4">
-      <Card className="p-4 shadow-lg border border-default-100">
-        <CardHeader className="flex flex-col items-start gap-1 pb-4">
-          <h2 className="text-2xl font-bold text-foreground">Apply for Position</h2>
-          <p className="text-sm text-default-500">
-            Applying for: <span className="font-semibold text-primary">{jobTitle}</span> ({jobId})
-          </p>
-        </CardHeader>
+    <div className="max-w-xl mx-auto mt-10 px-4 lg:mt-20">
+      <Card className="p-6 border border-default-100 shadow-xl">
+        
+        {/* --- Card Header Section --- */}
+        <Card.Header className="flex flex-col items-start gap-1 mb-6">
+          <Card.Title className="text-2xl font-bold text-foreground">
+            Apply for Position
+          </Card.Title>
+          <Card.Description className="text-sm text-default-500">
+            {/* Role: <span className="font-semibold text-primary">{jobTitle}</span> (ID: {jobId}) */}
+          </Card.Description>
+        </Card.Header>
 
-        <CardBody>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            {/* --- Hidden Fields (Still caught by FormEntry) --- */}
-            <input type="hidden" name="jobId" value={jobId} />
-            <input type="hidden" name="jobTitle" value={jobTitle} />
-            <input type="hidden" name="applicantName" value={applicantName} />
-            <input type="hidden" name="applicantEmail" value={applicantEmail} />
+        {/* --- Main Application Form --- */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          {/* Hidden fields passed dynamically during fromEntries parsing */}
+          <input type="hidden" name="jobId" value={currentJob?._id} />
+          <input type="hidden" name="companyName" value={currentJob?.companyName} />
+          <input type="hidden" name="jobTitle" value={currentJob?.jobTitle} />
+          <input type="hidden" name="applicantName" value={applicant?.name} />
+          <input type="hidden" name="applicantEmail" value={applicant?.email} />
+          <input type="hidden" name="applicant_id" value={applicant?.id} />
 
-            {/* --- Resume Link Input --- */}
-            <Input
-              type="url"
-              name="resumeLink"
-              label="Resume Link"
-              labelPlacement="outside"
-              placeholder="https://drive.google.com/file/d/..."
-              isRequired
-              variant="bordered"
-              radius="md"
-              startContent={
-                <FaLink className="text-default-400 pointer-events-none flex-shrink-0 text-small" />
-              }
-            />
+          {/* --- Resume Link Input Group --- */}
+          <TextField className="w-full flex flex-col gap-1.5" name="resumeLink" type="url" isRequired>
+            <Label className="text-sm font-medium text-foreground">
+              Resume Link <span className="text-danger">*</span>
+            </Label>
+            <div className="relative flex items-center">
+              <FaLink className="absolute left-3 text-default-400 size-4 pointer-events-none" />
+              <Input 
+                placeholder="https://drive.google.com/file/d/..." 
+                className="w-full pl-10 pr-3 py-2 border border-default-300 rounded-md bg-transparent text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-foreground"
+              />
+            </div>
+          </TextField>
 
-            {/* --- Portfolio Website Link Input --- */}
-            <Input
-              type="url"
-              name="portfolioLink"
-              label="Portfolio Website Link"
-              labelPlacement="outside"
-              placeholder="https://yourportfolio.com"
-              variant="bordered"
-              radius="md"
-              startContent={
-                <FaBriefcase className="text-default-400 pointer-events-none flex-shrink-0 text-small" />
-              }
-            />
+          {/* --- Portfolio Website Input Group --- */}
+          <TextField className="w-full flex flex-col gap-1.5" name="portfolioLink" type="url">
+            <Label className="text-sm font-medium text-foreground">
+              Portfolio Website Link
+            </Label>
+            <div className="relative flex items-center">
+              <FaBriefcase className="absolute left-3 text-default-400 size-4 pointer-events-none" />
+              <Input 
+                placeholder="https://yourportfolio.com" 
+                className="w-full pl-10 pr-3 py-2 border border-default-300 rounded-md bg-transparent text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-foreground"
+              />
+            </div>
+          </TextField>
 
-            {/* --- Message / Short Note Textarea --- */}
-            <Textarea
-              name="message"
-              label="Message / Short Note"
-              labelPlacement="outside"
-              placeholder="Tell the hiring team a bit about yourself..."
-              variant="bordered"
-              radius="md"
-              minRows={4}
-              disableAnimation
-              disableAutosize
-              startContent={
-                <FaRegCommentDots className="text-default-400 pointer-events-none flex-shrink-0 text-small mt-0.5" />
-              }
-            />
+          {/* --- Message / Short Note Input Group --- */}
+          <TextField className="w-full flex flex-col gap-1.5" name="message">
+            <Label className="text-sm font-medium text-foreground">
+              Message / Short Note
+            </Label>
+            <div className="relative flex items-start">
+              <FaRegCommentDots className="absolute left-3 top-3 text-default-400 size-4 pointer-events-none" />
+              <TextArea 
+                placeholder="Tell the hiring team a bit about yourself..." 
+                rows={4}
+                className="w-full pl-10 pr-3 py-2 border border-default-300 rounded-md bg-transparent text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-foreground resize-none"
+              />
+            </div>
+          </TextField>
 
-            {/* --- Submit Button --- */}
+          {/* --- Card Footer / Submit Button --- */}
+          <Card.Footer className="p-0 pt-2">
             <Button
               type="submit"
-              color="primary"
-              className="font-medium mt-2"
-              size="lg"
-              radius="md"
+              className="w-full bg-primary text-primary-foreground font-semibold py-2.5 rounded-md shadow-md hover:opacity-90 active:scale-[0.99] transition-all text-sm"
             >
               Submit Application
             </Button>
-          </form>
-        </CardBody>
+          </Card.Footer>
+        </form>
+
       </Card>
     </div>
   );

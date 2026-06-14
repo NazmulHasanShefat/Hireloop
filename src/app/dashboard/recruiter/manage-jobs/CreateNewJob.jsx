@@ -96,6 +96,7 @@ export default function CreateNewJobModal({ recruiterCompany, user }) {
       ...formProps,
       isRemote: isRemote,
       companyId: isCompanyId,
+      companyName: SelectedCompany,
       recruiterId: user.id,
       status: "active",
       isPubliclyVisible: true,
