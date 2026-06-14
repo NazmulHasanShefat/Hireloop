@@ -17,3 +17,18 @@ export const getRecruiterJobs = async (recruiterId) => {
         console.log(error)
     }
 }
+
+export const getAllJobs = async ()=>{
+    try {
+        return serverFetch("/api/jobs")
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getJobDetails = async (jobId)=>{
+    try {
+        return serverFetch(`/api/jobdetail/${jobId}`)
+    } catch (error) {
+        console.log(error)
+    }
+}

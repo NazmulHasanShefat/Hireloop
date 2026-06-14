@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import { Envelope, Eye, EyeSlash, Lock } from "@gravity-ui/icons";
-import {
-  InputGroup,
-  Label,
-  TextField,
-  Button,
-} from "@heroui/react";
+import { InputGroup, Label, TextField, Button } from "@heroui/react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +15,9 @@ export default function SignInForm() {
     email: "",
     password: "",
   });
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -101,19 +101,19 @@ export default function SignInForm() {
 
     console.log("Form Data:", values);
 
-     const { data, error } = await authClient.signIn.email({
-          email: values.email,
-          password: values.password,
-          callbackURL: "/",
-        });
-        if(error){
-          console.log(error)
-          alert(error.message)
-        }
-        
-        if (data) {
-          console.log("Signup successful:", data);
-        }
+    const { data, error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+    });
+    if (error) {
+      console.log(error);
+      alert(error.message);
+    }
+
+    if (data) {
+      router.push(redirectTo);
+      console.log("Signup successful:", data);
+    }
 
     // e.currentTarget.reset();
     // setPassword("");
@@ -155,9 +155,7 @@ export default function SignInForm() {
               <Envelope
                 className="size-4"
                 style={{
-                  color: errors.email
-                    ? "#ef4444"
-                    : "rgba(255,255,255,0.35)",
+                  color: errors.email ? "#ef4444" : "rgba(255,255,255,0.35)",
                 }}
               />
             </InputGroup.Prefix>
@@ -207,9 +205,7 @@ export default function SignInForm() {
               <Lock
                 className="size-4"
                 style={{
-                  color: errors.password
-                    ? "#ef4444"
-                    : "rgba(255,255,255,0.35)",
+                  color: errors.password ? "#ef4444" : "rgba(255,255,255,0.35)",
                 }}
               />
             </InputGroup.Prefix>
@@ -234,17 +230,13 @@ export default function SignInForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={
-                  showPassword ? "Hide password" : "Show password"
-                }
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 style={{
                   background: "none",
                   border: "none",
                   padding: 0,
                   cursor: "pointer",
-                  color: showPassword
-                    ? "#a78bfa"
-                    : "rgba(255,255,255,0.35)",
+                  color: showPassword ? "#a78bfa" : "rgba(255,255,255,0.35)",
                 }}
               >
                 {showPassword ? (
@@ -260,9 +252,7 @@ export default function SignInForm() {
           {password && (
             <div className="mt-3">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs text-white/60">
-                  Password Strength
-                </span>
+                <span className="text-xs text-white/60">Password Strength</span>
 
                 <span
                   className="text-xs font-medium"
@@ -298,41 +288,21 @@ export default function SignInForm() {
               </div>
 
               <ul className="mt-3 space-y-1 text-xs text-white/50">
-                <li
-                  className={
-                    password.length >= 8
-                      ? "text-green-400"
-                      : ""
-                  }
-                >
+                <li className={password.length >= 8 ? "text-green-400" : ""}>
                   ✓ Minimum 8 characters
                 </li>
 
-                <li
-                  className={
-                    /[A-Z]/.test(password)
-                      ? "text-green-400"
-                      : ""
-                  }
-                >
+                <li className={/[A-Z]/.test(password) ? "text-green-400" : ""}>
                   ✓ Uppercase letter
                 </li>
 
-                <li
-                  className={
-                    /[0-9]/.test(password)
-                      ? "text-green-400"
-                      : ""
-                  }
-                >
+                <li className={/[0-9]/.test(password) ? "text-green-400" : ""}>
                   ✓ Number
                 </li>
 
                 <li
                   className={
-                    /[^A-Za-z0-9]/.test(password)
-                      ? "text-green-400"
-                      : ""
+                    /[^A-Za-z0-9]/.test(password) ? "text-green-400" : ""
                   }
                 >
                   ✓ Special character
@@ -342,9 +312,7 @@ export default function SignInForm() {
           )}
 
           {errors.password && (
-            <p className="mt-2 text-xs text-red-500">
-              {errors.password}
-            </p>
+            <p className="mt-2 text-xs text-red-500">{errors.password}</p>
           )}
         </TextField>
 
@@ -352,10 +320,8 @@ export default function SignInForm() {
           type="submit"
           className="w-full mt-5 py-3 text-sm font-semibold text-white rounded-xl transition-opacity hover:opacity-90 active:scale-[0.98]"
           style={{
-            background:
-              "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
-            boxShadow:
-              "0 8px 24px rgba(124,58,237,0.30)",
+            background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
+            boxShadow: "0 8px 24px rgba(124,58,237,0.30)",
             fontFamily: "'Sora',sans-serif",
             height: "44px",
             border: "none",
@@ -364,6 +330,54 @@ export default function SignInForm() {
           Sign In Now
         </Button>
       </form>
+
+      {/* social login */}
+      <button
+        type="button"
+        className="w-full flex items-center justify-center gap-2.5 py-2.5 rounded-xl text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98]"
+        style={{
+          background: "rgba(255,255,255,0.06)",
+          border: "1px solid rgba(255,255,255,0.10)",
+          color: "rgba(255,255,255,0.75)",
+          fontFamily: "'Sora',sans-serif",
+          height: "44px",
+          cursor: "pointer",
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+            fill="#4285F4"
+          />
+          <path
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            fill="#34A853"
+          />
+          <path
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+            fill="#FBBC05"
+          />
+          <path
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+            fill="#EA4335"
+          />
+        </svg>
+        Continue with Google
+      </button>
+
+      {/* link sign up */}
+        <p
+            className="text-center mt-6 text-xs"
+            style={{
+              color: "rgba(255,255,255,0.35)",
+              fontFamily: "'Sora',sans-serif",
+            }}
+          >
+            Don&apos;t have an account?{" "}
+            <Link href={`/sign-up${redirectTo !== "/" ? `?${redirectTo}`: ""}`} style={{ color: "#a78bfa", textDecoration: "none" }}>
+              Sign up for free
+            </Link>
+          </p>
     </section>
   );
 }
