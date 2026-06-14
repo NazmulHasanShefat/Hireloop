@@ -48,7 +48,7 @@ const MyCompanysCards = ({ recruiterCompany }) => {
         {recruiterCompany.map((company) => (
           <div
             key={company._id}
-            className="bg-[#1e1e1e] border border-[#2d2d2d] rounded-2xl p-6 flex flex-col justify-between hover:border-[#3d3d3d] transition-all duration-300"
+            className="bg-[#1e1e1e] border h-max border-[#2d2d2d] rounded-2xl p-6 flex flex-col justify-between hover:border-[#3d3d3d] transition-all duration-300"
           >
             {/* উপরের অংশ: লোগো এবং স্ট্যাটাস ট্যাগ */}
             <div className="flex justify-between items-start mb-6">

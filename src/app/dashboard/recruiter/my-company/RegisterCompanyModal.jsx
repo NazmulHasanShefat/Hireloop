@@ -5,6 +5,7 @@ import { Button, Form, toast } from "@heroui/react";
 import { FiMapPin, FiUploadCloud, FiChevronDown, FiX } from "react-icons/fi";
 import { CgSpinner } from "react-icons/cg"; // Spinner icon imported for the uploading status
 import { createCompany } from "@/lib/api/companys";
+import { useRouter } from "next/navigation";
 
 export default function RegisterCompanyModal({recruiter}) {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,13 +13,14 @@ export default function RegisterCompanyModal({recruiter}) {
   const [logoPreview, setLogoPreview] = useState(""); 
   const [logoUrl, setLogoUrl] = useState(""); // Stores the hosted image URL from ImgBB
   const [isUploading, setIsUploading] = useState(false); // Manages loading spinner state
-
   // Select Dropdown States
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [selectedRange, setSelectedRange] = useState("");
   const [isIndustryOpen, setIsIndustryOpen] = useState(false);
   const [isRangeOpen, setIsRangeOpen] = useState(false);
 
+  // router 
+  const router = useRouter();
   // Input Validation State
   const [errors, setErrors] = useState({
     companyName: "",
@@ -208,6 +210,7 @@ export default function RegisterCompanyModal({recruiter}) {
     const payload = await createCompany(newCompany);
     console.log("new company result",payload)
     if(payload.insertedId){
+      router.refresh();
       toast.success("company Created successfullt")
     }
 

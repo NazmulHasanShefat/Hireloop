@@ -6,7 +6,7 @@ import { FiMapPin, FiUploadCloud, FiChevronDown, FiX, FiDollarSign, FiCalendar }
 import { createNewJob } from "@/lib/actions/jobs";
 import { useRouter } from "next/navigation";
 
-export default function CreateNewJobModal({ recruiterCompany }) {
+export default function CreateNewJobModal({ recruiterCompany, user }) {
   console.log(recruiterCompany)
 
   const [isOpen, setIsOpen] = useState(false);
@@ -96,9 +96,10 @@ export default function CreateNewJobModal({ recruiterCompany }) {
       ...formProps,
       isRemote: isRemote,
       companyId: isCompanyId,
+      recruiterId: user.id,
       status: "active",
       isPubliclyVisible: true,
-      applyedUsers: ["ram","sham"]
+      applyedUsers: []
     };
 
     const res = await createNewJob(payload);

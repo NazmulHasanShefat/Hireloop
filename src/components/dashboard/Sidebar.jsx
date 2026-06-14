@@ -51,9 +51,9 @@ export default function Sidebar() {
   return (
     <aside className="border hidden lg:block border-r-gray-500 pl-3 pr-5 fixed top-0 left-0 h-screen bg-white dark:bg-[#0a0a0a] w-[200px]">
       <div>
-        <div className="px-3">
+        <Link href={"/"} className="px-3">
         <Image src="/logo.png" alt="Logo" width={100} height={50} className="mb-3 mt-4" />
-        </div>
+        </Link>
         <div className="profile">
               <div className="px-3 pt-1 pb-1">
           <div className="flex items-center gap-2">
