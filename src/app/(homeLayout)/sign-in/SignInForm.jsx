@@ -374,7 +374,7 @@ export default function SignInForm() {
             }}
           >
             Don&apos;t have an account?{" "}
-            <Link href={`/sign-up${redirectTo !== "/" ? `?${redirectTo}`: ""}`} style={{ color: "#a78bfa", textDecoration: "none" }}>
+            <Link href={`/sign-up${redirectTo !== "/" ? `?redirect=${redirectTo}`: ""}`} style={{ color: "#a78bfa", textDecoration: "none" }}>
               Sign up for free
             </Link>
           </p>

@@ -5,13 +5,17 @@ import { Envelope, Eye, EyeSlash, Lock } from "@gravity-ui/icons";
 import { InputGroup, Label, TextField, Button } from "@heroui/react";
 import { UserIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [userRoll, setUserRoll] = useState("seeker");
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const [errors, setErrors] = useState({
     email: "",
@@ -26,7 +30,6 @@ export default function SignUpForm() {
     if (!emailRegex.test(email)) {
       return "Please enter a valid email address";
     }
-
     return "";
   };
 
@@ -112,7 +115,7 @@ export default function SignUpForm() {
 
     if (data) {
       console.log("Signup successful:", data);
-      router.push("/sign-in");
+      router.push(`/sign-in${redirectTo !== "/" ? `?redirect=${redirectTo}`: ""}`);
       // alert("sign up successfull")
     }
 
@@ -455,6 +458,23 @@ export default function SignUpForm() {
         </svg>
         Continue with Google
       </button>
+
+        {/* Sign Up Link */}
+          <p
+            className="text-center mt-6 text-xs"
+            style={{
+              color: "rgba(255,255,255,0.35)",
+              fontFamily: "'Sora',sans-serif",
+            }}
+          >
+            I have an account?{" "}
+            <Link
+              href={`/sign-in${redirectTo !== "/" ? `?redirect=${redirectTo}`: ""}`}
+              style={{ color: "#a78bfa", textDecoration: "none" }}
+            >
+              login
+            </Link>
+          </p>
     </section>
   );
 }

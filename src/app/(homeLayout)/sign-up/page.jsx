@@ -107,47 +107,13 @@ export default function SignUpPage() {
            <SignUpForm />
            
 
-            {/* Divider */}
-            <div className="flex items-center gap-3">
-              <div
-                className="flex-1 h-px"
-                style={{ background: "rgba(255,255,255,0.08)" }}
-              />
-              <span
-                className="text-xs"
-                style={{
-                  color: "rgba(255,255,255,0.25)",
-                  fontFamily: "'Sora',sans-serif",
-                }}
-              >
-                or continue with
-              </span>
-              <div
-                className="flex-1 h-px"
-                style={{ background: "rgba(255,255,255,0.08)" }}
-              />
-            </div>
+           
 
             {/* Google OAuth */}
            
           </div>
 
-          {/* Sign Up Link */}
-          <p
-            className="text-center mt-6 text-xs"
-            style={{
-              color: "rgba(255,255,255,0.35)",
-              fontFamily: "'Sora',sans-serif",
-            }}
-          >
-            I have an account?{" "}
-            <Link
-              href="/sign-in"
-              style={{ color: "#a78bfa", textDecoration: "none" }}
-            >
-              login
-            </Link>
-          </p>
+         
         </div>
       </div>
     </div>
