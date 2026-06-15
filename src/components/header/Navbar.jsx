@@ -40,7 +40,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Browse Jobs", href: "/browse-jobs" },
     { name: "Company", href: "#" },
-    { name: "Pricing", href: "#" },
+    { name: "Pricing", href: "/pricing" },
   ];
 
   return (
