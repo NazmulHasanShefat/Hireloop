@@ -40,7 +40,8 @@ const ApplyPage = async ({ params }) => {
   
   // 1. FIX: Fetch plan from database, or fallback to an object structure matching the schema definition
   const dbPlan = user?.plan ? await getPlanById(user.plan) : null;
-  
+  console.log(dbPlan)
+  console.log("user plan", user?.plan)
   const currentPlan = dbPlan || {
     id: "seeker_free",
     name: "Free",
@@ -48,7 +49,7 @@ const ApplyPage = async ({ params }) => {
   };
 
   const appliedCount = seekerApplications ? seekerApplications.length : 0;
-  const maxLimit = currentPlan.maxApplicationsPerMonth;
+  const maxLimit = currentPlan.maxApplicationsPerMonth === -1 ? "unlimited": currentPlan.maxApplicationsPerMonth;
 
   // 2. FIX: Handle the industry standard "Unlimited (-1)" database rule safely
   const isUnlimited = maxLimit === -1;
