@@ -46,6 +46,7 @@ export default function Navbar() {
   const dashboardLinks = {
     seeker: "/dashboard/seeker",
     recruiter: "/dashboard/recruiter",
+    admin: "/dashboard/admin",
   }
 
 

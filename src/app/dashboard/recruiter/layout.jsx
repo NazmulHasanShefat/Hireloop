@@ -1,6 +1,8 @@
 import Sidebar from "@/components/dashboard/Sidebar";
+import { requireRole } from "@/lib/core/session";
 
-export default function RecruiterLayout({children}) {
+export default async function RecruiterLayout({children}) {
+  await requireRole("recruiter");
   return (
     <section className="flex h-screen w-full">
       <Sidebar />

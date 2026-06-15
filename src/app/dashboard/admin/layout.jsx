@@ -2,14 +2,14 @@ import Sidebar from '@/components/dashboard/Sidebar';
 import { requireRole } from '@/lib/core/session';
 import React from 'react';
 
-const SeekerLayout = async ({children}) => {
-    await requireRole("seeker")
+const AdminLayout = async ({children}) => {
+    await requireRole("admin")
     return (
         <div>
-          <Sidebar />
-          {children}
+            <Sidebar />
+            {children}
         </div>
     );
 };
 
-export default SeekerLayout;
+export default AdminLayout;

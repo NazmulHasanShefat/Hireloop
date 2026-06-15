@@ -12,7 +12,6 @@ export default function DashboardNavbar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  console.log(session)
 
   // Mock notifications array
   const [notifications, setNotifications] = useState([
