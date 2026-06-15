@@ -17,10 +17,13 @@ export default function SignUpForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
 
+
   const [errors, setErrors] = useState({
     email: "",
     password: "",
   });
+
+  const userPlan = userRoll === "seeker" ? "seeker_free": "recruiter_free"
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -107,6 +110,7 @@ export default function SignUpForm() {
       email: values.email,
       password: values.password,
       role: userRoll,
+      plan: userPlan
     });
     if (error) {
       console.log(error);

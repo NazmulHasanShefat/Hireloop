@@ -22,6 +22,7 @@ export default function PricingPage() {
     seekers: [
       {
         plan: "Free",
+        id: "seeker_free",
         price: 0,
         icon: <FiBriefcase className="text-pink-500 w-5 h-5" />,
         description:
@@ -35,6 +36,7 @@ export default function PricingPage() {
       },
       {
         plan: "Pro",
+        id: "seeker_pro",
         price: 19,
         icon: <FiTrendingUp className="text-purple-500 w-5 h-5" />,
         description:
@@ -49,6 +51,7 @@ export default function PricingPage() {
       },
       {
         plan: "Premium",
+        id: "seeker_premium",
         price: 39,
         icon: <FiZap className="text-indigo-500 w-5 h-5" />,
         description:
@@ -64,6 +67,7 @@ export default function PricingPage() {
     recruiters: [
       {
         plan: "Free",
+        id: "recruiter_free",
         price: 0,
         icon: <FiAward className="text-pink-500 w-5 h-5" />,
         description:
@@ -77,6 +81,7 @@ export default function PricingPage() {
       },
       {
         plan: "Growth",
+        id: "recruiter_growth",
         price: 49,
         icon: <FiPieChart className="text-purple-500 w-5 h-5" />,
         description:
@@ -91,6 +96,7 @@ export default function PricingPage() {
       },
       {
         plan: "Enterprise",
+        id: "recruiter_enterprice",
         price: 149,
         icon: <FiUsers className="text-indigo-500 w-5 h-5" />,
         description:
@@ -225,6 +231,7 @@ export default function PricingPage() {
                 <span className="text-base font-normal">→</span>
               </button> */}
               <form action="/api/checkout_sessions" method="POST">
+              <input type="hidden" name="pricing_id" value={tier?.id}/>
                 <section>
                   <button
                     type="submit"

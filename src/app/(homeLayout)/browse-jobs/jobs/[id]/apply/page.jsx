@@ -8,6 +8,7 @@ import Link from "next/link";
 
 // React Icons Imports
 import { FaCrown, FaCheckCircle, FaExclamationTriangle, FaArrowLeft } from "react-icons/fa";
+import { getPlanById } from "@/lib/api/plans";
 
 const ApplyPage = async ({ params }) => {
   const user = await getUserSession();
@@ -37,17 +38,29 @@ const ApplyPage = async ({ params }) => {
   const jobDetails = await getJobDetails(id);
   const seekerApplications = await getApplicationByApplicant(user?.id);
   
-  const seekerplan = {
+  // 1. FIX: Fetch plan from database, or fallback to an object structure matching the schema definition
+  const dbPlan = user?.plan ? await getPlanById(user.plan) : null;
+  
+  const currentPlan = dbPlan || {
+    id: "seeker_free",
     name: "Free",
-    maxApplicationPerMonth: 3
+    maxApplicationsPerMonth: 3 // Fallback value matching original requirement
   };
 
-  const appliedCount = seekerApplications.length;
-  const maxLimit = seekerplan.maxApplicationPerMonth;
-  const isLimitReached = appliedCount >= maxLimit;
+  const appliedCount = seekerApplications ? seekerApplications.length : 0;
+  const maxLimit = currentPlan.maxApplicationsPerMonth;
 
-  // Calculate percentage safely for the visual progress tracker
-  const usagePercentage = Math.min((appliedCount / maxLimit) * 100, 100);
+  // 2. FIX: Handle the industry standard "Unlimited (-1)" database rule safely
+  const isUnlimited = maxLimit === -1;
+  const isLimitReached = !isUnlimited && appliedCount >= maxLimit;
+
+  // 3. FIX: Calculate progress safely. Ensures a fallback numeric value to prevent UI collapses from NaN.
+  let usagePercentage = 0;
+  if (isUnlimited) {
+    usagePercentage = 100; // Unlimited profiles show full or loaded progress bars safely
+  } else if (maxLimit > 0) {
+    usagePercentage = Math.min((appliedCount / maxLimit) * 100, 100);
+  }
 
   return (
     <div className="min-h-screen bg-content1-foreground/[0.02] pt-24 pb-16 px-4 sm:px-6 lg:px-8">
@@ -70,7 +83,7 @@ const ApplyPage = async ({ params }) => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-default-100 text-default-600">
-                  {seekerplan.name} Plan
+                  {currentPlan.name} Plan
                 </span>
                 {isLimitReached && (
                   <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-danger-50 text-danger border border-danger-100 flex items-center gap-1">
@@ -82,7 +95,7 @@ const ApplyPage = async ({ params }) => {
             </div>
             
             <p className="text-sm font-medium text-default-700">
-              Applied <span className="text-lg font-bold text-foreground">{appliedCount}</span> / {maxLimit} jobs
+              Applied <span className="text-lg font-bold text-foreground">{appliedCount}</span> / {isUnlimited ? "∞" : maxLimit} jobs
             </p>
           </div>
 
@@ -105,14 +118,16 @@ const ApplyPage = async ({ params }) => {
               </div>
               <Link 
                 className="text-sm font-bold text-amber-700 dark:text-amber-500 hover:underline inline-flex items-center gap-1" 
-                href={`/`}
+                href={`/pricing`}
               >
                 Upgrade Plan
               </Link>
             </div>
           ) : (
             <p className="text-xs text-default-400">
-              Your free quota resets at the end of the monthly billing window.
+              {isUnlimited 
+                ? "Enjoy unlimited applications on your premium tier dashboard." 
+                : "Your free quota resets at the end of the monthly billing window."}
             </p>
           )}
         </div>
@@ -131,7 +146,7 @@ const ApplyPage = async ({ params }) => {
             </p>
             <Link 
               className="mt-2 inline-flex items-center justify-center bg-primary text-primary-foreground font-semibold px-6 py-2.5 rounded-xl text-sm shadow-md hover:opacity-90 active:scale-[0.99] transition-all" 
-              href={`/`}
+              href={`/pricing`}
             >
               View Pricing Plans
             </Link>

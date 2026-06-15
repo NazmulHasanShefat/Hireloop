@@ -8,17 +8,15 @@ import { FaLink, FaBriefcase, FaRegCommentDots } from "react-icons/fa";
 import { postJobApplication } from "@/lib/actions/jobApplication";
 
 export default function ApplicationForm({ currentJob, applicant}) {
-  console.log(currentJob)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Collect all data using standard FormData + Object.fromEntries
     const formDataInstance = new FormData(e.currentTarget);
     const formValues = Object.fromEntries(formDataInstance.entries());
-
-    console.log("Complete Data for Database:", formValues);
     const result = await postJobApplication(formValues)
-    console.log("this is result",result)
+
     if(result.insertedId){
       toast.success("your application submited successfully")
     }
