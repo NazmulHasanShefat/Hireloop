@@ -43,6 +43,12 @@ export default function Navbar() {
     { name: "Pricing", href: "/pricing" },
   ];
 
+  const dashboardLinks = {
+    seeker: "/dashboard/seeker",
+    recruiter: "/dashboard/recruiter",
+  }
+
+
   return (
     <header
       className={`fixed top-0 left-0 z-50 w-full transition-transform duration-500 ease-in-out ${
@@ -98,7 +104,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link
-                  href="/dashboard/recruiter"
+                  href={dashboardLinks[data?.user?.role] || "seeker"}
                   className="rounded-xl cursor-pointer bg-violet-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-violet-700"
                 >
                   dashboard
