@@ -1,9 +1,11 @@
+import DashboardNavbar from '@/components/dashboard/DashboardNavbar';
 import React from 'react';
 
 const AdminHomePage = () => {
     return (
         <div>
-            this is admin page
+            <DashboardNavbar />
+           
         </div>
     );
 };

@@ -2,10 +2,10 @@
 
 import { baseUrl } from "@/context/constent"
 
-export const serverMutation = async (apiPath, data)=>{
+export const serverMutation = async (apiPath, data, method='POST')=>{
     try {
         const res = await fetch(`${baseUrl}${apiPath}`,{
-            method: "POST",
+            method: method,
             headers: {
                 "Content-Type":"application/json"
             },
