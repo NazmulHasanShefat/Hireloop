@@ -1,6 +1,6 @@
 "use server"
 // import { baseUrl } from "@/context/constent"
-import { serverFetch, serverMutation } from './../core/server';
+import { protectedFetch, serverFetch, serverMutation } from './../core/server';
 import { getUserSession } from '../core/session';
 
 export const createCompany = async (companyData)=>{
@@ -31,7 +31,7 @@ export const getLogdinRecruiterCompany = async ()=>{
 
 export const getAllcompanies = async()=>{
     try {
-        return serverFetch("/api/companys");
+        return protectedFetch("/api/companys");
     } catch (error) {
         console.log(error)
     }

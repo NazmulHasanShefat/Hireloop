@@ -1,7 +1,9 @@
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar';
+import { getUserToken } from '@/lib/core/session';
 import React from 'react';
 
-const AdminHomePage = () => {
+const AdminHomePage = async () => {
+    const usertoken = await getUserToken();
     return (
         <div>
             <DashboardNavbar />

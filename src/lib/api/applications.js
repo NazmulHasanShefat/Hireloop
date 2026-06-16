@@ -1,10 +1,10 @@
 "use server"
 
-import { serverFetch } from "../core/server"
+import { protectedFetch } from "../core/server"
 
 export const getApplicationByApplicant = async(applicantId)=>{
     try {
-        return serverFetch(`/api/getjobApplicationByApplicant?applicantId=${applicantId}`)
+        return protectedFetch(`/api/getjobApplicationByApplicant?applicantId=${applicantId}`)
     } catch (error) {
         console.log(error)
     }
