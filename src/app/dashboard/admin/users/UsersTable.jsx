@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { FaUser, FaBriefcase, FaUserShield } from 'react-icons/fa';
 
@@ -24,6 +25,17 @@ const getInitials = (name) => {
 };
 
 const UsersTable = ({ users = [] }) => {
+  
+  // Unified action handler for debugging/logging
+  const handleAction = (actionType, user) => {
+    console.log(`Action Triggers: [${actionType}] for User:`, {
+      id: user.id || user._id,
+      name: user.name,
+      email: user.email,
+      currentRole: user.role
+    });
+  };
+
   return (
     <div className="w-full bg-white dark:bg-[#121212] p-4 md:p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 transition-colors duration-200">
       
@@ -45,23 +57,24 @@ const UsersTable = ({ users = [] }) => {
               const isAdmin = user.role === 'admin';
               const isRecruiter = user.role === 'recruiter' || user.plan?.includes('recruiter');
               const isSuspended = user.status === 'suspended';
+              const joinDate = user?.createdAt?.$date || user?.createdAt;
 
               return (
                 <tr 
-                  key={user?._id?.$oid || user?._id} 
+                  key={user?.id || user?._id} 
                   className="hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition-colors duration-150"
                 >
                   {/* User Name with Avatar */}
                   <td className="py-4 px-4 flex items-center gap-3">
-                    {user.image ? (
+                    {user?.image ? (
                       <img
-                        src={user.image}
-                        alt={user.name}
+                        src={user?.image}
+                        alt={user?.name}
                         className="w-9 h-9 rounded-full object-cover border border-neutral-200 dark:border-neutral-700"
                       />
                     ) : (
                       <div className="w-9 h-9 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-semibold text-neutral-600 dark:text-neutral-200 flex items-center justify-center">
-                        {getInitials(user.name)}
+                        {getInitials(user?.name)}
                       </div>
                     )}
                     <span className="font-medium text-neutral-800 dark:text-neutral-200">{user.name || 'N/A'}</span>
@@ -91,7 +104,7 @@ const UsersTable = ({ users = [] }) => {
 
                   {/* Join Date */}
                   <td className="py-4 px-4 text-neutral-500 dark:text-neutral-400">
-                    {formatDate(user.createdAt?.$date)}
+                    {formatDate(joinDate)}
                   </td>
 
                   {/* Dynamic Status Tags */}
@@ -105,28 +118,54 @@ const UsersTable = ({ users = [] }) => {
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-500 border border-green-200 dark:border-green-900/30">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                         Active
-                    </span>
+                      </span>
                     )}
                   </td>
 
                   {/* Actions Column */}
                   <td className="py-4 px-4 text-right">
-                    <div className="inline-flex items-center gap-4 text-xs font-medium">
+                    <div className="inline-flex items-center gap-3 text-xs font-medium">
                       {isSuspended ? (
                         <>
-                          <button className="text-green-600 dark:text-green-500 hover:underline transition-all">
+                          <button 
+                            onClick={() => handleAction('Activate', user)}
+                            className="text-green-600 dark:text-green-500 hover:underline transition-all"
+                          >
                             Activate
                           </button>
-                          <button className="text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500 hover:underline transition-all">
+                          <button 
+                            onClick={() => handleAction('Delete', user)}
+                            className="text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500 hover:underline transition-all"
+                          >
                             Delete
                           </button>
                         </>
                       ) : (
                         <>
-                          <button className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 hover:underline transition-all">
-                            {isRecruiter ? 'Make Seeker' : 'Make Recruiter'}
-                          </button>
-                          <button className="text-red-600 dark:text-red-500 hover:underline transition-all">
+                          {/* Role Toggle Action */}
+                          {!isAdmin && (
+                            <button 
+                              onClick={() => handleAction(isRecruiter ? 'Make Seeker' : 'Make Recruiter', user)}
+                              className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 hover:underline transition-all"
+                            >
+                              {isRecruiter ? 'Make Seeker' : 'Make Recruiter'}
+                            </button>
+                          )}
+                          
+                          {/* Make Admin Action (Only if they aren't already admin) */}
+                          {!isAdmin && (
+                            <button 
+                              onClick={() => handleAction('Make Admin', user)}
+                              className="text-purple-600 dark:text-purple-400 hover:underline transition-all font-semibold"
+                            >
+                              Make Admin
+                            </button>
+                          )}
+
+                          <button 
+                            onClick={() => handleAction('Suspend', user)}
+                            className="text-red-600 dark:text-red-500 hover:underline transition-all"
+                          >
                             Suspend
                           </button>
                         </>
@@ -146,10 +185,11 @@ const UsersTable = ({ users = [] }) => {
           const isAdmin = user.role === 'admin';
           const isRecruiter = user.role === 'recruiter' || user.plan?.includes('recruiter');
           const isSuspended = user.status === 'suspended';
+          const joinDate = user?.createdAt?.$date || user?.createdAt;
 
           return (
             <div 
-              key={user?._id?.$oid || user?._id}
+              key={user?.id || user?._id}
               className="p-4 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/20 border border-neutral-100 dark:border-neutral-800/60 flex flex-col gap-3"
             >
               {/* Header: Identity & Status */}
@@ -208,27 +248,53 @@ const UsersTable = ({ users = [] }) => {
                 </div>
                 <div className="text-right">
                   <span className="block text-[10px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-semibold mb-0.5">Joined</span>
-                  <span className="font-medium text-neutral-700 dark:text-neutral-300">{formatDate(user.createdAt?.$date)}</span>
+                  <span className="font-medium text-neutral-700 dark:text-neutral-300">{formatDate(joinDate)}</span>
                 </div>
               </div>
 
               {/* Action Buttons row */}
-              <div className="mt-1 pt-2 border-t border-neutral-100 dark:border-neutral-800/40 flex items-center justify-end gap-3 text-xs font-semibold">
+              <div className="mt-1 pt-2 border-t border-neutral-100 dark:border-neutral-800/40 flex items-center justify-end flex-wrap gap-2 text-xs font-semibold">
                 {isSuspended ? (
                   <>
-                    <button className="px-3 py-1.5 rounded-md bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 hover:underline border border-green-200 dark:border-green-900/30">
+                    <button 
+                      onClick={() => handleAction('Activate', user)}
+                      className="px-3 py-1.5 rounded-md bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-900/30 active:bg-green-100"
+                    >
                       Activate
                     </button>
-                    <button className="px-3 py-1.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-red-500 dark:hover:text-red-400 border border-neutral-200 dark:border-neutral-700">
+                    <button 
+                      onClick={() => handleAction('Delete', user)}
+                      className="px-3 py-1.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-red-500 dark:hover:text-red-400 border border-neutral-200 dark:border-neutral-700"
+                    >
                       Delete
                     </button>
                   </>
                 ) : (
                   <>
-                    <button className="px-3 py-1.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-100 border border-neutral-200 dark:border-neutral-700">
-                      {isRecruiter ? 'Make Seeker' : 'Make Recruiter'}
-                    </button>
-                    <button className="px-3 py-1.5 rounded-md bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:underline border border-red-100 dark:border-red-900/30">
+                    {/* Role Toggles */}
+                    {!isAdmin && (
+                      <button 
+                        onClick={() => handleAction(isRecruiter ? 'Make Seeker' : 'Make Recruiter', user)}
+                        className="px-3 py-1.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700"
+                      >
+                        {isRecruiter ? 'Make Seeker' : 'Make Recruiter'}
+                      </button>
+                    )}
+
+                    {/* Make Admin Button */}
+                    {!isAdmin && (
+                      <button 
+                        onClick={() => handleAction('Make Admin', user)}
+                        className="px-3 py-1.5 rounded-md bg-purple-50 dark:bg-purple-950/20 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900/30"
+                      >
+                        Make Admin
+                      </button>
+                    )}
+
+                    <button 
+                      onClick={() => handleAction('Suspend', user)}
+                      className="px-3 py-1.5 rounded-md bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30"
+                    >
                       Suspend
                     </button>
                   </>
