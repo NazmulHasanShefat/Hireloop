@@ -5,7 +5,6 @@ import { getAllusers, getUsersList } from '@/lib/api/users';
 
 const UsersPage = async () => {
     const {users, total} = await getUsersList();
-    console.log(users)
     return (
         <div>
             <DashboardNavbar />

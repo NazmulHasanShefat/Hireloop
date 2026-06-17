@@ -1,5 +1,10 @@
+"use server"
+
+import { revalidatePath } from "next/cache";
+import { auth } from "../auth";
+import { headers } from "next/headers";
+
 export const updateUser = async (userId, userRole) => {
-  try {
     const data = await auth.api.setRole({
       body: {
         userId: userId,
@@ -8,9 +13,6 @@ export const updateUser = async (userId, userRole) => {
       // This endpoint requires session cookies.
       headers: await headers(),
     });
-    return data;
-    
-  } catch (error) {
-    console.log(error);
-  }
+    revalidatePath("/dashboard/admin/users")
+    return data;  
 };
